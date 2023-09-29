@@ -1,20 +1,21 @@
 const express = require('express');
 const router = express.Router();
+//Import Express Validator
 const {body, validationResult} = require('express-validator');
+//Import Database
 const connection = require('../config/database');
 
 router.get('/', function (req, res){
-    connection.query('select a.nama, b.nama_jurusan as jurusan ' + 'from mahasiswa a join jurusan b' + ' on b.id_j order by a.id_m desc', function(err, rows){
+    connection.query('select * from jurusan order by id_j desc', function(err, rows){
         if(err){
             return res.status(500).json({
                 status: false,
                 message: 'Server Failed',
-                error: err
             })
         }else{
             return res.status(200).json({
                 status:true,
-                message: 'Data Mahasiswa',
+                message: 'Data Jurusan',
                 data: rows
             })
         }
@@ -22,11 +23,8 @@ router.get('/', function (req, res){
 });
 
 router.post('/store', [
-    body('nama').notEmpty(),
-    body('nrp').notEmpty(),
-    body('id_j').notEmpty()
-
-],(req,res) =>{
+    body('nama_jurusan').notEmpty(),
+],(req, res) => {
     const error = validationResult(req);
     if(!error.isEmpty()){
         return res.status(422).json({
@@ -34,15 +32,13 @@ router.post('/store', [
         });
     }
     let Data = {
-        nama: req.body.nama,
-        nrp: req.body.nrp,
-        id_j: req.body.id_j
+        nama_jurusan: req.body.nama_jurusan,
     }
-    connection.query('insert into mahasiswa set ?', Data, function(err,rows){
+    connection.query('insert into jurusan set ?', Data, function(err, rows){
         if(err){
             return res.status(500).json({
                 status: false,
-                message: 'Server Error',
+                message: 'Server Error'
             })
         }else{
             return res.status(201).json({
@@ -54,25 +50,25 @@ router.post('/store', [
     })
 });
 
-router.get('/(:id)', function (req,res){
+router.get('/(:id)', function (req, res) {
     let id = req.params.id;
-    connection.query(`select * from mahasiswa where id_m = ${id}`, function(err, rows){
+    connection.query(`select * from jurusan where id_j = ${id}`, function (err, rows) {
         if(err){
             return res.status(500).json({
                 status: false,
-                message: 'Server Error',
+                message: 'Server Error'
             })
         }
         if(rows.length <=0){
             return res.status(404).json({
                 status: false,
-                message: 'Not Found',
+                message: 'Not Found'
             })
         }
         else{
             return res.status(200).json({
                 status: true,
-                message: 'Data Mahasiswa',
+                message: 'Data Jurusan',
                 data: rows[0]
             })
         }
@@ -80,30 +76,27 @@ router.get('/(:id)', function (req,res){
 });
 
 router.patch('/update/:id', [
-    body('nama').notEmpty(),
-    body('nrp').notEmpty(),
-    body('id_j').notEmpty()
+    body('nama_jurusan').notEmpty(),
 ], (req, res) => {
     const error = validationResult(req);
     if(!error.isEmpty()){
         return res.status(422).json({
             error: error.array()
-        });
+        })
     }
     let id = req.params.id;
     let Data = {
-        nama: req.body.nama,
-        nrp: req.body.nrp,
-        id_j: req.body.id_j
+        nama_jurusan: req.body.nama_jurusan,
     }
-    connection.query(`update mahasiswa set ? where id_m = ${id}`, Data, function (err, rows){
+    connection.query(`update jurusan set ? where id_j = ${id}`, Data, function (err, rows) {
         if(err){
             return res.status(500).json({
                 status: false,
-                message: 'Server Error'
+                message: 'Server Error',
+                error: err
             })
-        } else{
-            return res.status(200).json({
+        }else{
+            return res.status(500).json({
                 status: true,
                 message: 'Update Success..!'
             })
@@ -111,18 +104,18 @@ router.patch('/update/:id', [
     })
 });
 
-router.delete('/delete/(:id)', function(req, res){
+router.delete('/delete/(:id)', function(req, res) {
     let id = req.params.id;
-    connection.query(`delete from mahasiswa where id_m = ${id}`, function(err, rows){
+    connection.query(`delete from jurusan where id_j = ${id}`, function(err, rows) {
         if(err){
             return res.status(500).json({
                 status: false,
                 message: 'Server Error'
             })
-        } else{
+        }else{
             return res.status(200).json({
                 status: true,
-                message: 'Data Has been delete'
+                message: 'Data has been Delete!'
             })
         }
     })

@@ -9,6 +9,9 @@ app.use(bodyPs.json());
 const mhsRouter = require('./routes/mahasiswa');
 app.use('/api/mhs', mhsRouter);
 
+const jurusanRouter = require('./routes/jurusan');
+app.use('/api/jurusan', jurusanRouter);
+
 app.listen(port,() => {
     console.log(`Aplikasi Aldy Geming Berjalan di http:://localhost:${port}`)
 })
