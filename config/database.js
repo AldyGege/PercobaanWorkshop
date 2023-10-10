@@ -3,13 +3,13 @@ let connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'db_express'
+    database: 'db_01_express'
 })
 
-connection.connect(function(error){
-    if(!!error){
+connection.connect(function(error) {
+    if (!!error) {
         console.log(error)
-    }else{
+    } else {
         console.log('Koneksi berhasil')
     }
 })

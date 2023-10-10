@@ -1,20 +1,20 @@
 const express = require('express');
 const router = express.Router();
 //Import Express Validator
-const {body, validationResult} = require('express-validator');
+const { body, validationResult } = require('express-validator');
 //Import Database
 const connection = require('../config/database');
 
-router.get('/', function (req, res){
-    connection.query('select * from jurusan order by id_j desc', function(err, rows){
-        if(err){
+router.get('/', function(req, res) {
+    connection.query('select * from jurusan order by id_j desc', function(err, rows) {
+        if (err) {
             return res.status(500).json({
                 status: false,
                 message: 'Server Failed',
             })
-        }else{
+        } else {
             return res.status(200).json({
-                status:true,
+                status: true,
                 message: 'Data Jurusan',
                 data: rows
             })
@@ -24,9 +24,9 @@ router.get('/', function (req, res){
 
 router.post('/store', [
     body('nama_jurusan').notEmpty(),
-],(req, res) => {
+], (req, res) => {
     const error = validationResult(req);
-    if(!error.isEmpty()){
+    if (!error.isEmpty()) {
         return res.status(422).json({
             error: error.array()
         });
@@ -34,13 +34,13 @@ router.post('/store', [
     let Data = {
         nama_jurusan: req.body.nama_jurusan,
     }
-    connection.query('insert into jurusan set ?', Data, function(err, rows){
-        if(err){
+    connection.query('insert into jurusan set ?', Data, function(err, rows) {
+        if (err) {
             return res.status(500).json({
                 status: false,
                 message: 'Server Error'
             })
-        }else{
+        } else {
             return res.status(201).json({
                 status: true,
                 message: 'Success..!',
@@ -50,22 +50,21 @@ router.post('/store', [
     })
 });
 
-router.get('/(:id)', function (req, res) {
+router.get('/(:id)', function(req, res) {
     let id = req.params.id;
-    connection.query(`select * from jurusan where id_j = ${id}`, function (err, rows) {
-        if(err){
+    connection.query(`select * from jurusan where id_j = ${id}`, function(err, rows) {
+        if (err) {
             return res.status(500).json({
                 status: false,
                 message: 'Server Error'
             })
         }
-        if(rows.length <=0){
+        if (rows.length <= 0) {
             return res.status(404).json({
                 status: false,
                 message: 'Not Found'
             })
-        }
-        else{
+        } else {
             return res.status(200).json({
                 status: true,
                 message: 'Data Jurusan',
@@ -79,7 +78,7 @@ router.patch('/update/:id', [
     body('nama_jurusan').notEmpty(),
 ], (req, res) => {
     const error = validationResult(req);
-    if(!error.isEmpty()){
+    if (!error.isEmpty()) {
         return res.status(422).json({
             error: error.array()
         })
@@ -88,14 +87,14 @@ router.patch('/update/:id', [
     let Data = {
         nama_jurusan: req.body.nama_jurusan,
     }
-    connection.query(`update jurusan set ? where id_j = ${id}`, Data, function (err, rows) {
-        if(err){
+    connection.query(`update jurusan set ? where id_j = ${id}`, Data, function(err, rows) {
+        if (err) {
             return res.status(500).json({
                 status: false,
                 message: 'Server Error',
                 error: err
             })
-        }else{
+        } else {
             return res.status(500).json({
                 status: true,
                 message: 'Update Success..!'
@@ -107,12 +106,12 @@ router.patch('/update/:id', [
 router.delete('/delete/(:id)', function(req, res) {
     let id = req.params.id;
     connection.query(`delete from jurusan where id_j = ${id}`, function(err, rows) {
-        if(err){
+        if (err) {
             return res.status(500).json({
                 status: false,
                 message: 'Server Error'
             })
-        }else{
+        } else {
             return res.status(200).json({
                 status: true,
                 message: 'Data has been Delete!'
