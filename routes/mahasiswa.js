@@ -183,10 +183,15 @@ router.delete('/delete/(:id)', function(req, res) {
                 message: 'Not Found'
             })
         }
-        const namaFileLama = rows[0].gambar;
+        const gambarLama = rows[0].gambar;
+        const swa_fotoLama = rows[0].gambar;
 
-        if (namaFileLama && gambar) {
-            const pathFileLama = path.join(__dirname, '../public/images', namaFileLama);
+        if (gambarLama) {
+            const pathFileLama = path.join(__dirname, '../public/images', gambarLama);
+            fs.unlinkSync(pathFileLama);
+        }
+        if (swa_fotoLama) {
+            const pathFileLama = path.join(__dirname, '../public/images', swa_fotoLama);
             fs.unlinkSync(pathFileLama);
         }
         connection.query(`delete from mahasiswa where id_m = ${id}`, function(err, rows) {
