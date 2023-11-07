@@ -19,6 +19,10 @@ app.use('/api/mhs', mhsRouter);
 const jurusanRouter = require('./routes/jurusan');
 app.use('/api/jurusan', jurusanRouter);
 
+// Import rute register dan login 
+const auth = require('./routes/auth/auth'); 
+app.use('/api/auth', auth);
+
 app.listen(port, () => {
     console.log(`Aplikasi Aldy Geming Berjalan di http:://localhost:${port}`)
 })

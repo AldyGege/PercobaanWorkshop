@@ -25,8 +25,10 @@ const fileFilter = (req, file, cb) => {
 };
 const upload = multer({ storage: storage, fileFilter: fileFilter })
 
+const authenticateToken = require('../routes/auth/midleware/authenticateToken')
 
-router.get('/', function (req, res) {
+
+router.get('/', authenticateToken, function (req, res) {
     connection.query(
         'SELECT a.id_m, a.nama, a.nrp, b.nama_jurusan as jurusan, a.gambar, a.swa_foto ' +
         'FROM mahasiswa a ' +
@@ -50,7 +52,7 @@ router.get('/', function (req, res) {
     );
 });
 
-router.post('/store', upload.fields([{ name: 'gambar', maxCount: 1 }, { name: 'swa_foto', maxCount: 1 }]), [
+router.post('/store', authenticateToken, upload.fields([{ name: 'gambar', maxCount: 1 }, { name: 'swa_foto', maxCount: 1 }]), [
     body('nama').notEmpty(),
     body('nrp').notEmpty(),
     body('id_jurusan').notEmpty(),
@@ -111,7 +113,7 @@ router.get('/(:id)', function(req, res) {
     })
 })
 
-router.patch('/update/:id', upload.fields([{ name: 'gambar', maxCount: 1 }, { name: 'swa_foto', maxCount: 1 }]), [
+router.patch('/update/:id', authenticateToken, upload.fields([{ name: 'gambar', maxCount: 1 }, { name: 'swa_foto', maxCount: 1 }]), [
     body('nama').notEmpty(),
     body('nrp').notEmpty(),
     body('id_jurusan').notEmpty()
@@ -177,7 +179,7 @@ router.patch('/update/:id', upload.fields([{ name: 'gambar', maxCount: 1 }, { na
     })
 })
 
-router.delete('/delete/(:id)', function(req, res) {
+router.delete('/delete/(:id)', authenticateToken, function(req, res) {
     let id = req.params.id;
 
     connection.query(`select * from mahasiswa where id_m = ${id}`, function(err, rows) {
@@ -194,7 +196,7 @@ router.delete('/delete/(:id)', function(req, res) {
             })
         }
         const gambarLama = rows[0].gambar;
-        const swa_fotoLama = rows[0].gambar;
+        const swa_fotoLama = rows[0].swa_foto;
 
         if (gambarLama) {
             const pathFileLama = path.join(__dirname, '../public/images', gambarLama);
@@ -204,7 +206,7 @@ router.delete('/delete/(:id)', function(req, res) {
             const pathFileLama = path.join(__dirname, '../public/images', swa_fotoLama);
             fs.unlinkSync(pathFileLama);
         }
-        connection.query(`delete from mahasiswa where id_m = ${id}`, function(err, rows) {
+        connection.query(`delete * from mahasiswa where id_m = ${id}`, function(err, rows) {
             if (err) {
                 return res.status(500).json({
                     status: false,
