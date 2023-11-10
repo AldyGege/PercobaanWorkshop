@@ -5,7 +5,9 @@ const { body, validationResult } = require('express-validator');
 //Import Database
 const connection = require('../config/database');
 
-router.get('/', function(req, res) {
+const authenticateToken = require('../routes/auth/midleware/authenticateToken')
+
+router.get('/', authenticateToken, function(req, res) {
     connection.query('select * from jurusan order by id_j desc', function(err, rows) {
         if (err) {
             return res.status(500).json({
@@ -22,7 +24,7 @@ router.get('/', function(req, res) {
     })
 });
 
-router.post('/store', [
+router.post('/store', authenticateToken,[
     body('nama_jurusan').notEmpty(),
 ], (req, res) => {
     const error = validationResult(req);
@@ -50,7 +52,7 @@ router.post('/store', [
     })
 });
 
-router.get('/(:id)', function(req, res) {
+router.get('/(:id)', authenticateToken, function(req, res) {
     let id = req.params.id;
     connection.query(`select * from jurusan where id_j = ${id}`, function(err, rows) {
         if (err) {
@@ -74,7 +76,7 @@ router.get('/(:id)', function(req, res) {
     })
 });
 
-router.patch('/update/:id', [
+router.patch('/update/:id', authenticateToken, [
     body('nama_jurusan').notEmpty(),
 ], (req, res) => {
     const error = validationResult(req);
@@ -103,7 +105,7 @@ router.patch('/update/:id', [
     })
 });
 
-router.delete('/delete/(:id)', function(req, res) {
+router.delete('/delete/(:id)', authenticateToken, function(req, res) {
     let id = req.params.id;
     connection.query(`delete from jurusan where id_j = ${id}`, function(err, rows) {
         if (err) {
